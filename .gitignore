@@ -1,0 +1,12 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# AWS SAM/Lambda packaging
+*.zip
+
+# Environment files 
+.env
+
+# Test reports
+test_report_*.json

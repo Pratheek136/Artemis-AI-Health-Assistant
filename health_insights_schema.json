@@ -1,0 +1,513 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Health Insights API",
+    "version": "1.0.0",
+    "description": "API for generating personalized health insights and recommendations"
+  },
+  "servers": [
+    {
+      "url": "https://api.healthassistant.com",
+      "description": "Health Assistant API Server"
+    }
+  ],
+  "paths": {
+    "/insights": {
+      "post": {
+        "summary": "Generate health insights",
+        "description": "Generate comprehensive health insights for a user",
+        "operationId": "generateInsights",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InsightsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Health insights generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InsightsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/recommendations": {
+      "post": {
+        "summary": "Get health recommendations",
+        "description": "Get personalized health recommendations for a user",
+        "operationId": "getRecommendations",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecommendationsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Recommendations generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecommendationsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/trends": {
+      "post": {
+        "summary": "Analyze health trends",
+        "description": "Analyze health trends over a specified period",
+        "operationId": "analyzeTrends",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TrendsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Trend analysis completed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrendsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/summary": {
+      "post": {
+        "summary": "Get health summary",
+        "description": "Get comprehensive health summary for a user",
+        "operationId": "getHealthSummary",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SummaryRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Health summary generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SummaryResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "InsightsRequest": {
+        "type": "object",
+        "required": ["userId"],
+        "properties": {
+          "userId": {
+            "type": "string",
+            "description": "User ID"
+          },
+          "days": {
+            "type": "integer",
+            "default": 30,
+            "description": "Number of days to analyze"
+          },
+          "includeRecommendations": {
+            "type": "boolean",
+            "default": true,
+            "description": "Whether to include recommendations in the insights"
+          }
+        }
+      },
+      "RecommendationsRequest": {
+        "type": "object",
+        "required": ["userId"],
+        "properties": {
+          "userId": {
+            "type": "string",
+            "description": "User ID"
+          },
+          "days": {
+            "type": "integer",
+            "default": 30,
+            "description": "Number of days to analyze for recommendations"
+          },
+          "focusAreas": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["cardiovascular", "respiratory", "metabolic", "general", "medication"]
+            },
+            "description": "Specific areas to focus recommendations on"
+          }
+        }
+      },
+      "TrendsRequest": {
+        "type": "object",
+        "required": ["userId"],
+        "properties": {
+          "userId": {
+            "type": "string",
+            "description": "User ID"
+          },
+          "days": {
+            "type": "integer",
+            "default": 30,
+            "description": "Number of days to analyze trends"
+          },
+          "vitals": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["heartRate", "systolicBP", "diastolicBP", "temperature", "oxygenSaturation"]
+            },
+            "description": "Specific vitals to analyze trends for"
+          }
+        }
+      },
+      "SummaryRequest": {
+        "type": "object",
+        "required": ["userId"],
+        "properties": {
+          "userId": {
+            "type": "string",
+            "description": "User ID"
+          },
+          "days": {
+            "type": "integer",
+            "default": 30,
+            "description": "Number of days to include in summary"
+          },
+          "includeInsights": {
+            "type": "boolean",
+            "default": true,
+            "description": "Whether to include recent insights"
+          }
+        }
+      },
+      "HealthInsight": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["heart_rate", "blood_pressure", "temperature", "oxygen_saturation", "general"],
+            "description": "Type of health insight"
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["info", "warning", "critical"],
+            "description": "Severity level of the insight"
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable insight message"
+          },
+          "recommendation": {
+            "type": "string",
+            "description": "Recommended action based on the insight"
+          },
+          "data": {
+            "type": "object",
+            "description": "Additional data supporting the insight"
+          }
+        }
+      },
+      "HealthRecommendation": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["cardiovascular", "respiratory", "metabolic", "general", "medication", "lifestyle"],
+            "description": "Category of the recommendation"
+          },
+          "priority": {
+            "type": "string",
+            "enum": ["low", "medium", "high"],
+            "description": "Priority level of the recommendation"
+          },
+          "title": {
+            "type": "string",
+            "description": "Title of the recommendation"
+          },
+          "description": {
+            "type": "string",
+            "description": "Detailed description of the recommendation"
+          },
+          "actionItems": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Specific action items to implement the recommendation"
+          },
+          "timeframe": {
+            "type": "string",
+            "description": "Recommended timeframe for implementing the recommendation"
+          }
+        }
+      },
+      "VitalTrend": {
+        "type": "object",
+        "properties": {
+          "average": {
+            "type": "number",
+            "description": "Average value over the period"
+          },
+          "median": {
+            "type": "number",
+            "description": "Median value over the period"
+          },
+          "min": {
+            "type": "number",
+            "description": "Minimum value over the period"
+          },
+          "max": {
+            "type": "number",
+            "description": "Maximum value over the period"
+          },
+          "count": {
+            "type": "integer",
+            "description": "Number of data points"
+          },
+          "stdDev": {
+            "type": "number",
+            "description": "Standard deviation"
+          },
+          "trend": {
+            "type": "string",
+            "enum": ["increasing", "decreasing", "stable"],
+            "description": "Overall trend direction"
+          }
+        }
+      },
+      "HealthMetrics": {
+        "type": "object",
+        "properties": {
+          "heartRate": {
+            "$ref": "#/components/schemas/VitalTrend"
+          },
+          "systolicBP": {
+            "$ref": "#/components/schemas/VitalTrend"
+          },
+          "diastolicBP": {
+            "$ref": "#/components/schemas/VitalTrend"
+          },
+          "temperature": {
+            "$ref": "#/components/schemas/VitalTrend"
+          },
+          "oxygenSaturation": {
+            "$ref": "#/components/schemas/VitalTrend"
+          }
+        }
+      },
+      "InsightsResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["success", "error"]
+          },
+          "userId": {
+            "type": "string",
+            "description": "User ID"
+          },
+          "analysisDate": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date the analysis was performed"
+          },
+          "periodDays": {
+            "type": "integer",
+            "description": "Number of days analyzed"
+          },
+          "healthScore": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100,
+            "description": "Overall health score (0-100)"
+          },
+          "insights": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HealthInsight"
+            },
+            "description": "Generated health insights"
+          },
+          "recommendations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HealthRecommendation"
+            },
+            "description": "Generated recommendations"
+          },
+          "trends": {
+            "$ref": "#/components/schemas/HealthMetrics",
+            "description": "Health trends analysis"
+          }
+        }
+      },
+      "RecommendationsResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["success", "error"]
+          },
+          "userId": {
+            "type": "string",
+            "description": "User ID"
+          },
+          "recommendations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HealthRecommendation"
+            },
+            "description": "Generated recommendations"
+          },
+          "healthScore": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100,
+            "description": "Overall health score"
+          },
+          "generatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the recommendations were generated"
+          }
+        }
+      },
+      "TrendsResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["success", "error"]
+          },
+          "userId": {
+            "type": "string",
+            "description": "User ID"
+          },
+          "trends": {
+            "$ref": "#/components/schemas/HealthMetrics",
+            "description": "Health trends analysis"
+          },
+          "analysisDate": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date the analysis was performed"
+          },
+          "periodDays": {
+            "type": "integer",
+            "description": "Number of days analyzed"
+          }
+        }
+      },
+      "HealthSummary": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "description": "User ID"
+          },
+          "summaryDate": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date the summary was generated"
+          },
+          "periodDays": {
+            "type": "integer",
+            "description": "Number of days included in summary"
+          },
+          "healthScore": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100,
+            "description": "Overall health score"
+          },
+          "keyMetrics": {
+            "$ref": "#/components/schemas/HealthMetrics",
+            "description": "Key health metrics"
+          },
+          "recentInsights": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HealthInsight"
+            },
+            "description": "Recent health insights"
+          },
+          "overallStatus": {
+            "type": "string",
+            "enum": ["Excellent", "Good", "Fair", "Poor", "Critical"],
+            "description": "Overall health status"
+          }
+        }
+      },
+      "SummaryResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["success", "error"]
+          },
+          "summary": {
+            "$ref": "#/components/schemas/HealthSummary"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["error"]
+          },
+          "error": {
+            "type": "string",
+            "description": "Error type"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    }
+  }
+}

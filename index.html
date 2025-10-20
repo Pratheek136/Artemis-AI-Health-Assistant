@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Health Assistant Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-heartbeat"></i>
+                    <h1>AI Health Assistant</h1>
+                </div>
+                <div class="user-info">
+                    <span class="user-name" id="userName">John Doe</span>
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <nav class="nav-menu">
+                    <a href="#dashboard" class="nav-item active" data-section="dashboard">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="#vitals" class="nav-item" data-section="vitals">
+                        <i class="fas fa-heartbeat"></i>
+                        <span>Vitals</span>
+                    </a>
+                    <a href="#medications" class="nav-item" data-section="medications">
+                        <i class="fas fa-pills"></i>
+                        <span>Medications</span>
+                    </a>
+                    <a href="#insights" class="nav-item" data-section="insights">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Insights</span>
+                    </a>
+                    <a href="#chat" class="nav-item" data-section="chat">
+                        <i class="fas fa-comments"></i>
+                        <span>AI Chat</span>
+                    </a>
+                    <a href="#settings" class="nav-item" data-section="settings">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </a>
+                </nav>
+            </aside>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Dashboard Section -->
+                <section id="dashboard" class="content-section active">
+                    <div class="section-header">
+                        <h2>Health Dashboard</h2>
+                        <div class="last-updated">
+                            Last updated: <span id="lastUpdated">Just now</span>
+                        </div>
+                    </div>
+
+                    <!-- Health Score Card -->
+                    <div class="health-score-card">
+                        <div class="score-circle">
+                            <div class="score-value" id="healthScore">85</div>
+                            <div class="score-label">Health Score</div>
+                        </div>
+                        <div class="score-details">
+                            <div class="score-status" id="healthStatus">Good</div>
+                            <div class="score-trend">
+                                <i class="fas fa-arrow-up trend-up"></i>
+                                <span>+2 from last week</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Stats -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon heart-rate">
+                                <i class="fas fa-heartbeat"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-value" id="currentHeartRate">72</div>
+                                <div class="stat-label">Heart Rate (bpm)</div>
+                                <div class="stat-trend">
+                                    <i class="fas fa-arrow-down trend-down"></i>
+                                    <span>-3 bpm</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon blood-pressure">
+                                <i class="fas fa-tint"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-value" id="currentBP">120/80</div>
+                                <div class="stat-label">Blood Pressure</div>
+                                <div class="stat-trend">
+                                    <i class="fas fa-minus trend-stable"></i>
+                                    <span>Stable</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon temperature">
+                                <i class="fas fa-thermometer-half"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-value" id="currentTemp">98.6</div>
+                                <div class="stat-label">Temperature (°F)</div>
+                                <div class="stat-trend">
+                                    <i class="fas fa-minus trend-stable"></i>
+                                    <span>Normal</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon oxygen">
+                                <i class="fas fa-lungs"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-value" id="currentO2">98</div>
+                                <div class="stat-label">Oxygen (%)</div>
+                                <div class="stat-trend">
+                                    <i class="fas fa-arrow-up trend-up"></i>
+                                    <span>+1%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Alerts -->
+                    <div class="alerts-section">
+                        <h3>Recent Alerts</h3>
+                        <div class="alerts-list" id="alertsList">
+                            <div class="alert-item info">
+                                <i class="fas fa-info-circle"></i>
+                                <div class="alert-content">
+                                    <div class="alert-title">Health data synced</div>
+                                    <div class="alert-time">2 minutes ago</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Vitals Section -->
+                <section id="vitals" class="content-section">
+                    <div class="section-header">
+                        <h2>Health Vitals</h2>
+                        <button class="btn btn-primary" onclick="refreshVitals()">
+                            <i class="fas fa-sync-alt"></i>
+                            Refresh
+                        </button>
+                    </div>
+
+                    <div class="vitals-charts">
+                        <div class="chart-container">
+                            <canvas id="heartRateChart"></canvas>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="bloodPressureChart"></canvas>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="temperatureChart"></canvas>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="oxygenChart"></canvas>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Medications Section -->
+                <section id="medications" class="content-section">
+                    <div class="section-header">
+                        <h2>Medications</h2>
+                        <button class="btn btn-primary" onclick="showAddMedicationModal()">
+                            <i class="fas fa-plus"></i>
+                            Add Medication
+                        </button>
+                    </div>
+
+                    <div class="medications-list" id="medicationsList">
+                        <!-- Medications will be populated here -->
+                    </div>
+
+                    <!-- Medication Reminders -->
+                    <div class="reminders-section">
+                        <h3>Upcoming Reminders</h3>
+                        <div class="reminders-list" id="remindersList">
+                            <!-- Reminders will be populated here -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Insights Section -->
+                <section id="insights" class="content-section">
+                    <div class="section-header">
+                        <h2>Health Insights</h2>
+                        <button class="btn btn-primary" onclick="generateInsights()">
+                            <i class="fas fa-brain"></i>
+                            Generate Insights
+                        </button>
+                    </div>
+
+                    <div class="insights-content" id="insightsContent">
+                        <!-- Insights will be populated here -->
+                    </div>
+                </section>
+
+                <!-- AI Chat Section -->
+                <section id="chat" class="content-section">
+                    <div class="section-header">
+                        <h2>AI Health Assistant</h2>
+                        <div class="chat-status">
+                            <span class="status-indicator online"></span>
+                            <span>Online</span>
+                        </div>
+                    </div>
+
+                    <div class="chat-container">
+                        <div class="chat-messages" id="chatMessages">
+                            <div class="message assistant">
+                                <div class="message-avatar">
+                                    <i class="fas fa-robot"></i>
+                                </div>
+                                <div class="message-content">
+                                    <div class="message-text">
+                                        Hello! I'm your AI health assistant. How can I help you today?
+                                    </div>
+                                    <div class="message-time">Just now</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="chat-input-container">
+                            <div class="chat-input">
+                                <input type="text" id="chatInput" placeholder="Ask me about your health..." />
+                                <button class="send-button" onclick="sendMessage()">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Settings Section -->
+                <section id="settings" class="content-section">
+                    <div class="section-header">
+                        <h2>Settings</h2>
+                    </div>
+
+                    <div class="settings-content">
+                        <div class="settings-section">
+                            <h3>Profile Information</h3>
+                            <div class="form-group">
+                                <label for="userNameInput">Full Name</label>
+                                <input type="text" id="userNameInput" value="John Doe" />
+                            </div>
+                            <div class="form-group">
+                                <label for="userAge">Age</label>
+                                <input type="number" id="userAge" value="35" />
+                            </div>
+                            <div class="form-group">
+                                <label for="userEmail">Email</label>
+                                <input type="email" id="userEmail" value="john.doe@example.com" />
+                            </div>
+                        </div>
+
+                        <div class="settings-section">
+                            <h3>Health Preferences</h3>
+                            <div class="form-group">
+                                <label for="notificationEmail">Notification Email</label>
+                                <input type="email" id="notificationEmail" value="john.doe@example.com" />
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" id="enableAlerts" checked />
+                                    Enable health alerts
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" id="enableReminders" checked />
+                                    Enable medication reminders
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="settings-section">
+                            <h3>Emergency Contacts</h3>
+                            <div class="form-group">
+                                <label for="emergencyContact">Emergency Contact</label>
+                                <input type="text" id="emergencyContact" value="Jane Doe" />
+                            </div>
+                            <div class="form-group">
+                                <label for="emergencyPhone">Emergency Phone</label>
+                                <input type="tel" id="emergencyPhone" value="+1 (555) 123-4567" />
+                            </div>
+                        </div>
+
+                        <button class="btn btn-primary" onclick="saveSettings()">
+                            <i class="fas fa-save"></i>
+                            Save Settings
+                        </button>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Medication Modal -->
+    <div id="addMedicationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Medication</h3>
+                <span class="close" onclick="closeAddMedicationModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="medName">Medication Name</label>
+                    <input type="text" id="medName" placeholder="e.g., Metformin" />
+                </div>
+                <div class="form-group">
+                    <label for="medDosage">Dosage</label>
+                    <input type="text" id="medDosage" placeholder="e.g., 500mg" />
+                </div>
+                <div class="form-group">
+                    <label for="medFrequency">Frequency</label>
+                    <select id="medFrequency">
+                        <option value="once daily">Once daily</option>
+                        <option value="twice daily">Twice daily</option>
+                        <option value="three times daily">Three times daily</option>
+                        <option value="every 8 hours">Every 8 hours</option>
+                        <option value="every 12 hours">Every 12 hours</option>
+                        <option value="as needed">As needed</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="medInstructions">Instructions</label>
+                    <textarea id="medInstructions" placeholder="Additional instructions..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeAddMedicationModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="addMedication()">Add Medication</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

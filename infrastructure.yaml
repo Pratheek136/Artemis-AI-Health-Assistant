@@ -1,0 +1,529 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'HIPAA-compliant AI Health Assistant Infrastructure with Bedrock Agent'
+
+Parameters:
+  NotificationEmail:
+    Type: String
+    Description: Email address for notifications and alerts
+    Default: admin@example.com
+  
+  Environment:
+    Type: String
+    Description: Environment name
+    Default: prod
+    AllowedValues: [dev, staging, prod]
+
+Resources:
+  
+  # DynamoDB Tables (3 tables for HIPAA compliance)
+  VitalsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub '${Environment}-health-vitals'
+      BillingMode: PROVISIONED
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+      AttributeDefinitions:
+        - AttributeName: userId
+          AttributeType: S
+        - AttributeName: timestamp
+          AttributeType: S
+      KeySchema:
+        - AttributeName: userId
+          KeyType: HASH
+        - AttributeName: timestamp
+          KeyType: RANGE
+      SSESpecification:
+        SSEEnabled: true
+        
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: Purpose
+          Value: HealthVitals
+
+  MedicationsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub '${Environment}-health-medications'
+      BillingMode: PROVISIONED
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+      AttributeDefinitions:
+        - AttributeName: userId
+          AttributeType: S
+        - AttributeName: medicationId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: userId
+          KeyType: HASH
+        - AttributeName: medicationId
+          KeyType: RANGE
+      SSESpecification:
+        SSEEnabled: true
+        
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: Purpose
+          Value: Medications
+
+  UserProfilesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub '${Environment}-health-profiles'
+      BillingMode: PROVISIONED
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+      AttributeDefinitions:
+        - AttributeName: userId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: userId
+          KeyType: HASH
+      SSESpecification:
+        SSEEnabled: true
+        
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: Purpose
+          Value: UserProfiles
+
+  
+  # SNS Topics
+  HealthAlertsTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: !Sub '${Environment}-health-alerts'
+      
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+
+  MedicationRemindersTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: !Sub '${Environment}-medication-reminders'
+      
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+
+  
+  # Lambda Functions (4 functions)
+  HealthMonitoringFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub '${Environment}-health-monitoring'
+      Runtime: python3.11
+      Handler: health_monitoring_lambda.lambda_handler
+      Code:
+        ZipFile: |
+          import json
+          import boto3
+          import os
+          from datetime import datetime
+          
+          def lambda_handler(event, context):
+              # Placeholder for health monitoring logic
+              return {
+                  'statusCode': 200,
+                  'body': json.dumps('Health monitoring processed')
+              }
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Environment:
+        Variables:
+          VITALS_TABLE: !Ref VitalsTable
+          ALERTS_TOPIC: !Ref HealthAlertsTopic
+      Timeout: 300
+      MemorySize: 512
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+
+  MedicationManagementFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub '${Environment}-medication-management'
+      Runtime: python3.11
+      Handler: medication_management_lambda.lambda_handler
+      Code:
+        ZipFile: |
+          import json
+          import boto3
+          import os
+          from datetime import datetime
+          
+          def lambda_handler(event, context):
+              # Placeholder for medication management logic
+              return {
+                  'statusCode': 200,
+                  'body': json.dumps('Medication management processed')
+              }
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Environment:
+        Variables:
+          MEDICATIONS_TABLE: !Ref MedicationsTable
+          REMINDERS_TOPIC: !Ref MedicationRemindersTopic
+      Timeout: 300
+      MemorySize: 512
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+
+  HealthInsightsFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub '${Environment}-health-insights'
+      Runtime: python3.11
+      Handler: health_insights_lambda.lambda_handler
+      Code:
+        ZipFile: |
+          import json
+          import boto3
+          import os
+          from datetime import datetime
+          
+          def lambda_handler(event, context):
+              # Placeholder for health insights logic
+              return {
+                  'statusCode': 200,
+                  'body': json.dumps('Health insights processed')
+              }
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Environment:
+        Variables:
+          VITALS_TABLE: !Ref VitalsTable
+          PROFILES_TABLE: !Ref UserProfilesTable
+      Timeout: 300
+      MemorySize: 512
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+
+  EmergencyAlertsFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub '${Environment}-emergency-alerts'
+      Runtime: python3.11
+      Handler: emergency_alerts_lambda.lambda_handler
+      Code:
+        ZipFile: |
+          import json
+          import boto3
+          import os
+          from datetime import datetime
+          
+          def lambda_handler(event, context):
+              # Placeholder for emergency alerts logic
+              return {
+                  'statusCode': 200,
+                  'body': json.dumps('Emergency alert processed')
+              }
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Environment:
+        Variables:
+          ALERTS_TOPIC: !Ref HealthAlertsTopic
+          NOTIFICATION_EMAIL: !Ref NotificationEmail
+      Timeout: 300
+      MemorySize: 512
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+
+  # Bedrock Agent Lambda
+  BedrockAgentFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub '${Environment}-bedrock-agent'
+      Runtime: python3.11
+      Handler: bedrock_agent_lambda.lambda_handler
+      Code:
+        ZipFile: |
+          import json
+          import boto3
+          import os
+          from datetime import datetime
+          
+          def lambda_handler(event, context):
+              # Placeholder for Bedrock Agent logic
+              return {
+                  'statusCode': 200,
+                  'body': json.dumps('Bedrock Agent processed')
+              }
+      Role: !GetAtt BedrockAgentRole.Arn
+      Environment:
+        Variables:
+          VITALS_TABLE: !Ref VitalsTable
+          MEDICATIONS_TABLE: !Ref MedicationsTable
+          PROFILES_TABLE: !Ref UserProfilesTable
+          ALERTS_TOPIC: !Ref HealthAlertsTopic
+          REMINDERS_TOPIC: !Ref MedicationRemindersTopic
+      Timeout: 300
+      MemorySize: 1024
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+
+  # API Gateway
+  HealthAPI:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: !Sub '${Environment}-health-api'
+      Description: Health Assistant API
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+  HealthAPIDeployment:
+    Type: AWS::ApiGateway::Deployment
+    DependsOn:
+      - HealthAPI # This needs to depend on your API's methods. Since you have no methods, this is a placeholder. You must add methods for this to work.
+    Properties:
+      RestApiId: !Ref HealthAPI
+
+  HealthAPIStage:
+    Type: AWS::ApiGateway::Stage
+    Properties:
+      StageName: prod # This 'prod' matches your hardcoded output URL
+      RestApiId: !Ref HealthAPI
+      DeploymentId: !Ref HealthAPIDeployment
+  # IoT Core
+  IoTCorePolicy:
+    Type: AWS::IoT::Policy
+    Properties:
+      PolicyName: !Sub '${Environment}-health-iot-policy'
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - iot:Connect
+              - iot:Publish
+              - iot:Subscribe
+              - iot:Receive
+            Resource: '*'
+
+  # CloudWatch Log Groups
+  HealthMonitoringLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${Environment}-health-monitoring'
+      RetentionInDays: 30
+
+  MedicationManagementLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${Environment}-medication-management'
+      RetentionInDays: 30
+
+  HealthInsightsLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${Environment}-health-insights'
+      RetentionInDays: 30
+
+  EmergencyAlertsLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${Environment}-emergency-alerts'
+      RetentionInDays: 30
+
+  BedrockAgentLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${Environment}-bedrock-agent'
+      RetentionInDays: 30
+
+  # IAM Roles
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub '${Environment}-lambda-execution-role'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: DynamoDBAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:GetItem
+                  - dynamodb:PutItem
+                  - dynamodb:UpdateItem
+                  - dynamodb:DeleteItem
+                  - dynamodb:Query
+                  - dynamodb:Scan
+                Resource:
+                  - !GetAtt VitalsTable.Arn
+                  - !GetAtt MedicationsTable.Arn
+                  - !GetAtt UserProfilesTable.Arn
+        - PolicyName: SNSPublish
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - sns:Publish
+                Resource:
+                  - !Ref HealthAlertsTopic
+                  - !Ref MedicationRemindersTopic
+        - PolicyName: CloudWatchLogs
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: '*'
+
+  BedrockAgentRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub '${Environment}-bedrock-agent-role'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: BedrockAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - bedrock:InvokeModel
+                  - bedrock:InvokeModelWithResponseStream
+                Resource: '*'
+        - PolicyName: DynamoDBAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:GetItem
+                  - dynamodb:PutItem
+                  - dynamodb:UpdateItem
+                  - dynamodb:DeleteItem
+                  - dynamodb:Query
+                  - dynamodb:Scan
+                Resource:
+                  - !GetAtt VitalsTable.Arn
+                  - !GetAtt MedicationsTable.Arn
+                  - !GetAtt UserProfilesTable.Arn
+        - PolicyName: SNSPublish
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - sns:Publish
+                Resource:
+                  - !Ref HealthAlertsTopic
+                  - !Ref MedicationRemindersTopic
+
+  # SNS Subscriptions
+  HealthAlertsSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      Protocol: email
+      TopicArn: !Ref HealthAlertsTopic
+      Endpoint: !Ref NotificationEmail
+
+  MedicationRemindersSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      Protocol: email
+      TopicArn: !Ref MedicationRemindersTopic
+      Endpoint: !Ref NotificationEmail
+
+Outputs:
+  VitalsTableName:
+    Description: Name of the vitals DynamoDB table
+    Value: !Ref VitalsTable
+    Export:
+      Name: !Sub '${Environment}-VitalsTable'
+
+  MedicationsTableName:
+    Description: Name of the medications DynamoDB table
+    Value: !Ref MedicationsTable
+    Export:
+      Name: !Sub '${Environment}-MedicationsTable'
+
+  UserProfilesTableName:
+    Description: Name of the user profiles DynamoDB table
+    Value: !Ref UserProfilesTable
+    Export:
+      Name: !Sub '${Environment}-UserProfilesTable'
+
+  HealthAlertsTopicArn:
+    Description: ARN of the health alerts SNS topic
+    Value: !Ref HealthAlertsTopic
+    Export:
+      Name: !Sub '${Environment}-HealthAlertsTopic'
+
+  MedicationRemindersTopicArn:
+    Description: ARN of the medication reminders SNS topic
+    Value: !Ref MedicationRemindersTopic
+    Export:
+      Name: !Sub '${Environment}-MedicationRemindersTopic'
+
+  HealthAPIEndpoint:
+    Description: API Gateway endpoint URL
+    Value: !Sub 'https://${HealthAPI}.execute-api.${AWS::Region}.amazonaws.com/prod'
+    Export:
+      Name: !Sub '${Environment}-HealthAPIEndpoint'
+
+  BedrockAgentFunctionArn:
+    Description: ARN of the Bedrock Agent Lambda function
+    Value: !GetAtt BedrockAgentFunction.Arn
+    Export:
+      Name: !Sub '${Environment}-BedrockAgentFunction'
+  
+  HealthMonitoringFunctionArn:
+    Description: ARN of the Health Monitoring Lambda
+    Value: !GetAtt HealthMonitoringFunction.Arn
+    Export:
+      Name: !Sub '${Environment}-HealthMonitoringFunction'
+  MedicationManagementFunctionArn:
+    Description: ARN of the Medication Management Lambda
+    Value: !GetAtt MedicationManagementFunction.Arn
+    Export:
+      Name: !Sub '${Environment}-MedicationManagementFunction'
+  HealthInsightsFunctionArn:
+    Description: ARN of the Health Insights Lambda
+    Value: !GetAtt HealthInsightsFunction.Arn
+    Export:
+      Name: !Sub '${Environment}-HealthInsightsFunction'
+  EmergencyAlertsFunctionArn:
+    Description: ARN of the Emergency Alerts Lambda
+    Value: !GetAtt EmergencyAlertsFunction.Arn
+    Export:
+      Name: !Sub '${Environment}-EmergencyAlertsFunction'

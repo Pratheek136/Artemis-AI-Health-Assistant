@@ -1,0 +1,449 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Health Monitoring API",
+    "version": "1.0.0",
+    "description": "API for real-time health monitoring and anomaly detection"
+  },
+  "servers": [
+    {
+      "url": "https://api.healthassistant.com",
+      "description": "Health Assistant API Server"
+    }
+  ],
+  "paths": {
+    "/vitals": {
+      "post": {
+        "summary": "Store health vitals data",
+        "description": "Store real-time health vitals data for a user",
+        "operationId": "storeVitals",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VitalsData"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Vitals stored successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VitalsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Get recent vitals data",
+        "description": "Retrieve recent health vitals data for a user",
+        "operationId": "getRecentVitals",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "User ID"
+          },
+          {
+            "name": "hours",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 24
+            },
+            "description": "Number of hours to look back"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Recent vitals retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VitalsListResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/anomalies": {
+      "post": {
+        "summary": "Check for health anomalies",
+        "description": "Analyze vitals data for potential health anomalies",
+        "operationId": "checkAnomalies",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VitalsData"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Anomaly analysis completed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnomalyResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/trends": {
+      "get": {
+        "summary": "Get health trends",
+        "description": "Calculate health trends over a specified period",
+        "operationId": "getHealthTrends",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "User ID"
+          },
+          {
+            "name": "days",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 7
+            },
+            "description": "Number of days to analyze"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Health trends calculated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrendsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "VitalsData": {
+        "type": "object",
+        "required": ["userId", "vitals"],
+        "properties": {
+          "userId": {
+            "type": "string",
+            "description": "Unique user identifier"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp of the vitals reading"
+          },
+          "vitals": {
+            "$ref": "#/components/schemas/Vitals"
+          },
+          "deviceId": {
+            "type": "string",
+            "description": "ID of the device that recorded the vitals"
+          },
+          "location": {
+            "type": "object",
+            "properties": {
+              "latitude": {
+                "type": "number"
+              },
+              "longitude": {
+                "type": "number"
+              }
+            }
+          }
+        }
+      },
+      "Vitals": {
+        "type": "object",
+        "properties": {
+          "heartRate": {
+            "type": "number",
+            "minimum": 20,
+            "maximum": 300,
+            "description": "Heart rate in beats per minute"
+          },
+          "systolicBP": {
+            "type": "number",
+            "minimum": 50,
+            "maximum": 300,
+            "description": "Systolic blood pressure in mmHg"
+          },
+          "diastolicBP": {
+            "type": "number",
+            "minimum": 30,
+            "maximum": 200,
+            "description": "Diastolic blood pressure in mmHg"
+          },
+          "temperature": {
+            "type": "number",
+            "minimum": 80,
+            "maximum": 120,
+            "description": "Body temperature in Fahrenheit"
+          },
+          "oxygenSaturation": {
+            "type": "number",
+            "minimum": 60,
+            "maximum": 100,
+            "description": "Blood oxygen saturation percentage"
+          },
+          "respiratoryRate": {
+            "type": "number",
+            "minimum": 5,
+            "maximum": 60,
+            "description": "Respiratory rate in breaths per minute"
+          },
+          "bloodGlucose": {
+            "type": "number",
+            "minimum": 50,
+            "maximum": 500,
+            "description": "Blood glucose level in mg/dL"
+          },
+          "weight": {
+            "type": "number",
+            "minimum": 50,
+            "maximum": 500,
+            "description": "Weight in pounds"
+          },
+          "height": {
+            "type": "number",
+            "minimum": 36,
+            "maximum": 96,
+            "description": "Height in inches"
+          },
+          "fallDetected": {
+            "type": "boolean",
+            "description": "Whether a fall was detected"
+          },
+          "panicButton": {
+            "type": "boolean",
+            "description": "Whether panic button was activated"
+          }
+        }
+      },
+      "VitalsResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["success", "error"]
+          },
+          "message": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "anomalies": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Anomaly"
+            }
+          }
+        }
+      },
+      "VitalsListResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["success", "error"]
+          },
+          "vitals": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VitalsData"
+            }
+          },
+          "count": {
+            "type": "integer"
+          }
+        }
+      },
+      "Anomaly": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "CRITICAL_HEART_RATE",
+              "WARNING_HEART_RATE",
+              "CRITICAL_BLOOD_PRESSURE",
+              "WARNING_BLOOD_PRESSURE",
+              "CRITICAL_TEMPERATURE",
+              "WARNING_TEMPERATURE",
+              "CRITICAL_OXYGEN_SATURATION",
+              "WARNING_OXYGEN_SATURATION"
+            ]
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["CRITICAL", "WARNING", "INFO"]
+          },
+          "value": {
+            "type": "string",
+            "description": "The anomalous value that triggered the alert"
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable description of the anomaly"
+          },
+          "recommendation": {
+            "type": "string",
+            "description": "Recommended action to take"
+          }
+        }
+      },
+      "AnomalyResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["success", "error"]
+          },
+          "anomalies": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Anomaly"
+            }
+          },
+          "criticalCount": {
+            "type": "integer",
+            "description": "Number of critical anomalies"
+          },
+          "warningCount": {
+            "type": "integer",
+            "description": "Number of warning anomalies"
+          }
+        }
+      },
+      "TrendsResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["success", "error"]
+          },
+          "trends": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/VitalTrend"
+            }
+          },
+          "period": {
+            "type": "object",
+            "properties": {
+              "startDate": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "endDate": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "days": {
+                "type": "integer"
+              }
+            }
+          }
+        }
+      },
+      "VitalTrend": {
+        "type": "object",
+        "properties": {
+          "average": {
+            "type": "number",
+            "description": "Average value over the period"
+          },
+          "median": {
+            "type": "number",
+            "description": "Median value over the period"
+          },
+          "min": {
+            "type": "number",
+            "description": "Minimum value over the period"
+          },
+          "max": {
+            "type": "number",
+            "description": "Maximum value over the period"
+          },
+          "count": {
+            "type": "integer",
+            "description": "Number of data points"
+          },
+          "stdDev": {
+            "type": "number",
+            "description": "Standard deviation"
+          },
+          "trend": {
+            "type": "string",
+            "enum": ["increasing", "decreasing", "stable"],
+            "description": "Overall trend direction"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["error"]
+          },
+          "error": {
+            "type": "string",
+            "description": "Error type"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    }
+  }
+}

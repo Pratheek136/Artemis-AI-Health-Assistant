@@ -1,0 +1,658 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Medication Management API",
+    "version": "1.0.0",
+    "description": "API for medication management, reminders, and adherence tracking"
+  },
+  "servers": [
+    {
+      "url": "https://api.healthassistant.com",
+      "description": "Health Assistant API Server"
+    }
+  ],
+  "paths": {
+    "/medications": {
+      "post": {
+        "summary": "Add a new medication",
+        "description": "Add a new medication to a user's medication list",
+        "operationId": "addMedication",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MedicationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Medication added successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MedicationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Get user medications",
+        "description": "Retrieve all medications for a user",
+        "operationId": "getMedications",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "User ID"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["active", "inactive", "all"],
+              "default": "active"
+            },
+            "description": "Filter by medication status"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Medications retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MedicationListResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/medications/{medicationId}": {
+      "put": {
+        "summary": "Update medication",
+        "description": "Update an existing medication",
+        "operationId": "updateMedication",
+        "parameters": [
+          {
+            "name": "medicationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Medication ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MedicationUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Medication updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MedicationResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Remove medication",
+        "description": "Remove a medication from the user's list",
+        "operationId": "removeMedication",
+        "parameters": [
+          {
+            "name": "medicationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Medication ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Medication removed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MedicationResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/medications/{medicationId}/dose": {
+      "post": {
+        "summary": "Log medication dose",
+        "description": "Log that a medication dose was taken",
+        "operationId": "logDose",
+        "parameters": [
+          {
+            "name": "medicationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Medication ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DoseLogRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Dose logged successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DoseLogResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/medications/reminders": {
+      "get": {
+        "summary": "Get medication reminders",
+        "description": "Get upcoming medication reminders for a user",
+        "operationId": "getReminders",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "User ID"
+          },
+          {
+            "name": "hours",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 24
+            },
+            "description": "Number of hours to look ahead for reminders"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Reminders retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RemindersResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/medications/adherence": {
+      "get": {
+        "summary": "Get medication adherence report",
+        "description": "Get medication adherence report for a user",
+        "operationId": "getAdherenceReport",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "User ID"
+          },
+          {
+            "name": "days",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 30
+            },
+            "description": "Number of days to analyze"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Adherence report retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdherenceReportResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "MedicationRequest": {
+        "type": "object",
+        "required": ["userId", "medicationName", "dosage", "frequency"],
+        "properties": {
+          "userId": {
+            "type": "string",
+            "description": "User ID"
+          },
+          "medicationName": {
+            "type": "string",
+            "description": "Name of the medication"
+          },
+          "dosage": {
+            "type": "string",
+            "description": "Dosage amount and unit (e.g., '10mg', '1 tablet')"
+          },
+          "frequency": {
+            "type": "string",
+            "description": "How often to take the medication (e.g., '2x daily', 'every 8 hours')"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Start date for the medication"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date",
+            "description": "End date for the medication (optional)"
+          },
+          "instructions": {
+            "type": "string",
+            "description": "Additional instructions for taking the medication"
+          },
+          "prescriber": {
+            "type": "string",
+            "description": "Name of the prescribing doctor"
+          },
+          "pharmacy": {
+            "type": "string",
+            "description": "Pharmacy information"
+          }
+        }
+      },
+      "MedicationUpdateRequest": {
+        "type": "object",
+        "properties": {
+          "medicationName": {
+            "type": "string",
+            "description": "Name of the medication"
+          },
+          "dosage": {
+            "type": "string",
+            "description": "Dosage amount and unit"
+          },
+          "frequency": {
+            "type": "string",
+            "description": "How often to take the medication"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date",
+            "description": "End date for the medication"
+          },
+          "instructions": {
+            "type": "string",
+            "description": "Additional instructions"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["active", "inactive"],
+            "description": "Medication status"
+          }
+        }
+      },
+      "DoseLogRequest": {
+        "type": "object",
+        "required": ["userId"],
+        "properties": {
+          "userId": {
+            "type": "string",
+            "description": "User ID"
+          },
+          "doseTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Time when the dose was taken"
+          },
+          "notes": {
+            "type": "string",
+            "description": "Additional notes about the dose"
+          }
+        }
+      },
+      "Medication": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "description": "User ID"
+          },
+          "medicationId": {
+            "type": "string",
+            "description": "Unique medication identifier"
+          },
+          "medicationName": {
+            "type": "string",
+            "description": "Name of the medication"
+          },
+          "dosage": {
+            "type": "string",
+            "description": "Dosage amount and unit"
+          },
+          "frequency": {
+            "type": "string",
+            "description": "How often to take the medication"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Start date for the medication"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date",
+            "description": "End date for the medication"
+          },
+          "instructions": {
+            "type": "string",
+            "description": "Additional instructions"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["active", "inactive"],
+            "description": "Medication status"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the medication was added"
+          },
+          "lastTaken": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the medication was last taken"
+          },
+          "adherenceRate": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "Adherence rate as a decimal (0.0 to 1.0)"
+          },
+          "totalDoses": {
+            "type": "integer",
+            "description": "Total number of doses taken"
+          },
+          "missedDoses": {
+            "type": "integer",
+            "description": "Number of missed doses"
+          },
+          "prescriber": {
+            "type": "string",
+            "description": "Name of the prescribing doctor"
+          },
+          "pharmacy": {
+            "type": "string",
+            "description": "Pharmacy information"
+          }
+        }
+      },
+      "MedicationResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["success", "error"]
+          },
+          "message": {
+            "type": "string"
+          },
+          "medication": {
+            "$ref": "#/components/schemas/Medication"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "MedicationListResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["success", "error"]
+          },
+          "medications": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Medication"
+            }
+          },
+          "count": {
+            "type": "integer"
+          }
+        }
+      },
+      "DoseLogResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["success", "error"]
+          },
+          "message": {
+            "type": "string"
+          },
+          "doseLogged": {
+            "type": "boolean"
+          },
+          "newAdherenceRate": {
+            "type": "number",
+            "description": "Updated adherence rate after logging the dose"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Reminder": {
+        "type": "object",
+        "properties": {
+          "medicationId": {
+            "type": "string",
+            "description": "Medication ID"
+          },
+          "medicationName": {
+            "type": "string",
+            "description": "Name of the medication"
+          },
+          "dosage": {
+            "type": "string",
+            "description": "Dosage to take"
+          },
+          "scheduledTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the medication should be taken"
+          },
+          "isOverdue": {
+            "type": "boolean",
+            "description": "Whether the reminder is overdue"
+          },
+          "minutesUntilDue": {
+            "type": "integer",
+            "description": "Minutes until the medication is due"
+          }
+        }
+      },
+      "RemindersResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["success", "error"]
+          },
+          "reminders": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Reminder"
+            }
+          },
+          "overdueCount": {
+            "type": "integer",
+            "description": "Number of overdue reminders"
+          },
+          "upcomingCount": {
+            "type": "integer",
+            "description": "Number of upcoming reminders"
+          }
+        }
+      },
+      "AdherenceReport": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "description": "User ID"
+          },
+          "reportDate": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date the report was generated"
+          },
+          "periodDays": {
+            "type": "integer",
+            "description": "Number of days analyzed"
+          },
+          "totalMedications": {
+            "type": "integer",
+            "description": "Total number of active medications"
+          },
+          "overallAdherenceRate": {
+            "type": "number",
+            "description": "Overall adherence rate across all medications"
+          },
+          "medications": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "medicationId": {
+                  "type": "string"
+                },
+                "medicationName": {
+                  "type": "string"
+                },
+                "adherenceRate": {
+                  "type": "number"
+                },
+                "totalDoses": {
+                  "type": "integer"
+                },
+                "missedDoses": {
+                  "type": "integer"
+                },
+                "lastTaken": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "status": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "AdherenceReportResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["success", "error"]
+          },
+          "report": {
+            "$ref": "#/components/schemas/AdherenceReport"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["error"]
+          },
+          "error": {
+            "type": "string",
+            "description": "Error type"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    }
+  }
+}
