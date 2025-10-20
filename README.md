@@ -2,7 +2,7 @@
 
 A comprehensive, HIPAA-compliant AI-powered health monitoring and management system built on AWS with Amazon Bedrock Nova models for intelligent health insights and decision-making.
 
-## 🏥 Overview
+##  Overview
 
 The AI Health Assistant is an autonomous health monitoring system that provides real-time health monitoring, intelligent medication management, personalized health insights, and emergency detection capabilities. It leverages Amazon Nova models through AWS Bedrock AgentCore for natural language health consultations and decision-making.
 
@@ -16,12 +16,12 @@ The AI Health Assistant is an autonomous health monitoring system that provides 
 - **HIPAA Compliance**: End-to-end encryption and audit logging
 - **Responsive Web Dashboard**: Modern, mobile-friendly interface
 
-## 🏗️ Architecture
+## Architecture
 
 ### Core Components
 
 1. **LLM & Reasoning Engine**
-   - Amazon Nova models hosted on AWS Bedrock
+   - Amazon Titan models hosted on AWS Bedrock
    - Bedrock AgentCore for workflow orchestration
    - Natural language processing for health consultations
 
@@ -44,7 +44,7 @@ The AI Health Assistant is an autonomous health monitoring system that provides 
    - AI chat interface
    - Settings and profile management
 
-## 📋 Prerequisites
+## Prerequisites
 
 Before deploying the AI Health Assistant, ensure you have:
 
@@ -68,7 +68,7 @@ Your AWS user/role needs permissions for:
 - IAM (create roles and policies)
 - KMS (create and manage keys)
 
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. Clone and Setup
 
@@ -113,7 +113,7 @@ python3 test_agent.py
 python3 test_agent.py my-stack-name
 ```
 
-## 📁 Project Structure
+##  Project Structure
 
 ```
 ai-health-assistant/
@@ -134,7 +134,7 @@ ai-health-assistant/
 └── app.js                             # Web dashboard JavaScript
 ```
 
-## 🔧 Configuration
+## Configuration
 
 ### Environment Variables
 
@@ -177,7 +177,7 @@ def generate_health_insight(user_context, vitals_data):
     pass
 ```
 
-## 📊 Data Models
+## Data Models
 
 ### Vitals Data Structure
 
@@ -223,7 +223,7 @@ def generate_health_insight(user_context, vitals_data):
 }
 ```
 
-## 🔌 API Endpoints
+## API Endpoints
 
 ### Health Monitoring
 
@@ -300,7 +300,7 @@ POST /chat
 }
 ```
 
-## 🧪 Testing
+## Testing
 
 ### Automated Tests
 
@@ -375,7 +375,7 @@ response = requests.post(f"{API_ENDPOINT}/emergency", json=emergency_vitals)
 print(response.json())
 ```
 
-## 🔒 Security & Compliance
+## Security & Compliance
 
 ### HIPAA Compliance
 
@@ -393,7 +393,7 @@ print(response.json())
 - **Monitoring**: CloudWatch alarms for security events
 - **Backup**: Automated backups with point-in-time recovery
 
-## 📈 Monitoring & Observability
+## Monitoring & Observability
 
 ### CloudWatch Metrics
 
@@ -416,32 +416,8 @@ print(response.json())
 - **Audit Logs**: HIPAA compliance logging
 - **Error Logs**: Exception tracking and debugging
 
-## 💰 Cost Optimization
 
-### Serverless Architecture
-
-- **Pay-per-use**: Lambda functions only charge for execution time
-- **Auto-scaling**: DynamoDB scales automatically
-- **On-demand**: SNS charges per message
-- **Efficient**: Bedrock Nova Lite for cost-effective AI
-
-### Cost Monitoring
-
-- **AWS Cost Explorer**: Track spending by service
-- **Budget Alerts**: Set spending limits
-- **Resource Tagging**: Track costs by environment
-- **Right-sizing**: Optimize Lambda memory and timeout
-
-### Estimated Costs (Monthly)
-
-- **Lambda**: $5-20 (depending on usage)
-- **DynamoDB**: $10-50 (depending on data volume)
-- **SNS**: $1-5 (depending on message volume)
-- **Bedrock**: $10-100 (depending on AI usage)
-- **CloudWatch**: $5-15 (depending on log volume)
-- **Total**: ~$30-190/month
-
-## 🚨 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -499,7 +475,7 @@ export DEBUG=true
 export LOG_LEVEL=DEBUG
 ```
 
-## 🔄 Updates & Maintenance
+## Updates & Maintenance
 
 ### Updating the System
 
@@ -522,7 +498,7 @@ export LOG_LEVEL=DEBUG
 - **Regional Scaling**: Deploy to multiple regions
 - **Performance Tuning**: Optimize Lambda memory and timeout
 
-## 🤝 Contributing
+## Contributing
 
 ### Development Setup
 
@@ -540,7 +516,7 @@ export LOG_LEVEL=DEBUG
 - **Testing**: Unit and integration tests
 - **Security**: Security best practices
 
-## 📞 Support
+## Support
 
 ### Documentation
 
@@ -558,18 +534,13 @@ export LOG_LEVEL=DEBUG
 
 ### Professional Support
 
-For enterprise support and custom implementations:
 
-- **Email**: support@aihealthassistant.com
-- **Slack**: #ai-health-assistant
-- **Consulting**: Custom development and integration
-- **Training**: Team training and workshops
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - **Amazon Web Services** for the cloud infrastructure
 - **Amazon Bedrock** for the AI capabilities
@@ -579,6 +550,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Built with ❤️ for better healthcare outcomes**
+
 
 *Last updated: January 2024*
